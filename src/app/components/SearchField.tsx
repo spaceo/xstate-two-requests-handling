@@ -16,6 +16,7 @@ export default function SearchField() {
         onChange={({ target: { value } }) =>
           searchMachine.send({ type: "TYPING", q: value })
         }
+        value={currentQ}
       />
       <button onClick={() => searchMachine.send({ type: "SEARCH" })}>
         Search

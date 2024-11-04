@@ -9,7 +9,8 @@ const machine = setup({
       selectedFilters: string[];
     },
     input: {} as {
-      selectedFilters: string[];
+      q: string;
+      filters: string[];
     },
   },
   actors: {
@@ -45,19 +46,20 @@ const machine = setup({
     },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAYgJIAyAKgKIBKA2gAwC6ioADgPaz4ALvl4A7LiAAeiAIwBWAGy4FAdgCcKgMwKFmtWu06ANCACeidXNwAmawoAs1markAOGfoC+nkygw4CYjJaAE0ABUoAOQBxNk4kED4BYTEJaQQAWnk1XDk5NR0FV017VhVXVk0TcwQ5ctwVezV7ByLXFVY1OW9fNCw8QhJSAGV6AEFGAGEACTiJJKERcQT0rPlcSr1NRut3Is0qs0QDBs0K1jLFfMV7HpA-ftwAM3wiQTB0fFEoUggxMFwsEEqHegL6ARebw+XygcwSCxSy1A6XkSlUGkMegMhWqFnsKgadkcZQOXQMdweENe70+3zB-jwlOwMN+-wIogAbrwANYApnPanQun8pkwhBfLmYEFLOJwnj8RapFaIdoyGyuNTOHZFTWuXG1BRWFSNVSudwySrdHz3cF4SE0mH0x6i76kD7oXjoXDcIggp6egC2TqpUNpUGDjNtYolvCliNlHHmCsRaUQOmsGxkMncFQ1mmz+rkWYaResKlsCmyuwptoFocd9o+dYdrr+ogBMd5EebQvDja9-ejnNj0rECfi8uSS1TCFc9jV9ns+ca+jJ7n1rgUOQuGnLcha+TUrhrDJ7YbPZ5Z7s93t9gn96CD-MHdP7l++4uHcZlHDliWT07Kgg6a4EuMgtCoW5Loahw1O49i4Eeui2Kw9iuNYXQKCezpRsKuE-G2HbDl2Ir4RGQ6SqOojjkmU5KsiiB2BsrhyJo1ioWSrDtC0+rWHUNgaJ0FydPoZy3NapEMo6Lo-NeXo+n6gbdjJ5EfjG35jr+ibwgB9FSIgjiaIhThqKw1glFsi76vIarCTuzgVPOJTeNaoi8BAcASEytGKki+mZOxBJ5AUOjFKU5SVPqGTmYhq6mTI7FmglKjYQEgxgD5KZAfxbhIforH5OZMgbqwVjyBhMgdIuzQKNYqV2oKYaZYBDG1EWuDoeh2ZsZq+T2PqBxKCopbsauGpaPV77ht5Ol0X56SHh1uxOMUFV9fqjgIXxCUtLoZT2EWk0vtNtYyc1enpA4BKdStPXZP1RwGltpZaOxJSseJvSnsd3aEed82yGUGYqNmc7yHIqG6Hqj1uEoEMJR4ujgYuVpfY8P39v9M4KBcNj4u0JRlvBCj6uWBJoVD3EHQeR2NQ2jVTVjQEOK4ePlFojjlOBJOPZu5OboYBjxehtP1q+DN-bNvkzhaCXKEDrDZOWTgPXBGqnLodT5m4IOfTap5nVLWWtdoapaMUmgXEWxP6rouR2XxTQkp0k0qYbk7S0BpQ5ObBxW9m3O8ZUoGrjozgWli4neEAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAKgPIDi1AMgKID6AYgJJ3kMBKA2gAwBdRKAAOAe1j4ALvnEA7ESAAeiAMxqALLgCsagBwBOQ0bU6AjAHZ+5gDQgAnok2GAbLs399ln+deXNS30AX2D7FAwcAmIycgBNAAU2ADlqAWEkEAkpWQUlVQQAWjVXbU0AJktzcvM1cv01fn41eycEHX19XC1yrTVzQwHLHUNQ8LQsPEISUgBlBgBBbgBhAAl0pWyZOUVMgsLzcx1cZrVDNQD6vwaWx0Rz3EsDJv5h1xGdUrGQCMncADN8ERpGB0Ph5FBSBAFGBcLBpKgQXCJlFAcDQeCoBtMltcrtQAUju5-IYnq5XGdzuTXK1EAFLI9yqVyq8NIYRmpvr9UUCQWCIcjInhudhMVCYQR5AA3cQAa1hIoBvIxAsVIsxCHBMswiJ26WxYkk2zye0Q5n4rkMuEMLMG+h0TU05gatIQ-jUuApFPO-FJHVJXJReDRfMxgr+6ohpFB6HE6FwoiIiP+cYAtuGeej+VAM8KgxqteIdXj9UJNka8flEPpXPxPZozJa-PVNK3Xa4Bp7qiZ3pp9OZAjpA0KlVmwyHQaPQ1HofJYYX5bmpyqcxP42uC9Ki7qFKWMoacjsqwhzZ4TgEbbWntVNDpXaT3N4BzWbkdW8O-huBWvl9no+hY3jRNkzTJcv1XZV10gzdtR3eQ93LQ8TQJasOxOCkam8fwjCse9ynKXB9D7ZoKS0e1mg-KJIxzajxTnSUZUXNV81VFioE1Ldiz1IQDSyCsj1Ndpalwa4agMG8bX0V0Li6HRKndIILmGYZKLzIUw1omM4wTJNpBTdB02Y9TWOM9jCy43ceLLHF+OQlRnCeXQtDcS19CacoKldA5LCtfgmRtQ5KnqfQmVCMIQHkcQIDgJQRUQ418XsoonQIioqjE+pGmaLyzG0Pym1bdlmlvTlwsVaYwHiytBMKB4Bn4B0POdJkguk-htEGAwa2qYYdDk1Tf0xKqBJQhBhjrW9jEtTwmXtKS7gQVttA7cp2Qqeo-POSwBvA3NhrsgofK6Sa3EMGbXDm109AIwKztbAYiItHboJMiM2P2xKCiI9wTum-LLoW-wbu7bwXBeEIyqDQbXqiWdKpspDPrNSpzG6B0Rhayk-PbM7ulcVa2SsYxzmesdv0gj7jyOwifPx28bC0OwFoaY4yPajsG2aQZSenCCs2hqBKcE76abcDyHVqJ172GbpiP7fC+qeHmV1-XA4aF0bqkOXBeiMOT-FePt71JXQTFePw-IqVwBuojWkqdVGzFqM6Lp89rNC8pl3H1wZanq4x30hkdqNzIaEYS49JrR53NFdwx3a86pvf80pJfqNxtrCoA */
   id: "search",
   initial: "idle",
   context: ({ input }) => ({
-    currentQ: "",
+    currentQ: input.q ?? "",
     searchData: {},
     facetData: {},
-    selectedFilters: input.selectedFilters ?? [],
+    selectedFilters: input.filters ?? [],
   }),
   states: {
     idle: {
       on: {
         TOGGLE_FILTER: {
+          guard: "hasSearchString",
           actions: assign({
             selectedFilters: ({ event, context }) => {
               if (context.selectedFilters.includes(event.filter)) {
@@ -173,8 +175,30 @@ const machine = setup({
   },
 });
 
+export const knownFilters = [
+  {
+    id: "apple",
+    label: "Æble",
+  },
+  {
+    id: "horse",
+    label: "Hest",
+  },
+  {
+    id: "cannibal",
+    label: "Kannibal",
+  },
+] as const;
+
+const params = new URLSearchParams(document.location.search);
+const filters = params
+  .getAll("filter")
+  .filter((filter) => knownFilters.find((known) => known.id === filter));
+const q = params.get("q") ?? "";
+
 export default createActor(machine, {
   input: {
-    selectedFilters: ["horse"],
+    q,
+    filters,
   },
 }).start();

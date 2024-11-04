@@ -1,23 +1,8 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import searchMachine from "@/machines/search.machine";
+import searchMachine, { knownFilters } from "@/machines/search.machine";
 import { useSelector } from "@xstate/react";
-
-const items = [
-  {
-    id: "apple",
-    label: "Æble",
-  },
-  {
-    id: "horse",
-    label: "Hest",
-  },
-  {
-    id: "cannibal",
-    label: "Kannibal",
-  },
-] as const;
 
 export default function SearchFilters() {
   const machineContext = useSelector(
@@ -35,7 +20,7 @@ export default function SearchFilters() {
         <pre>{JSON.stringify(machineContext, null, 2)}</pre>
       </div>
       <div>
-        {items.map((item) => (
+        {knownFilters.map((item) => (
           <div key={item.id}>
             <div>
               <label
