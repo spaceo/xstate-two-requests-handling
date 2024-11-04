@@ -14,7 +14,7 @@ export default setup({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ ...input }),
-        });
+        }).then((res) => res.json());
       }
     ),
     getFacets: fromPromise(
@@ -29,12 +29,17 @@ export default setup({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ ...input }),
-        });
+        }).then((res) => res.json());
       }
     ),
   },
+  guards: {
+    hasSearchString: ({ context }) => {
+      return context.currentQ && context.currentQ.length > 0;
+    },
+  },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAYgJIAyAKgKIBKA2gAwC6ioADgPaz4ALvl4A7LiAAeiAKwAmADQgAnogAcARlwAWAJz7dcgMwB2VgDZWM7SYC+tpSgw4CxMrQCaABUoA5AOJsnEggfALCYhLSCGbmuBpqhhoarJrmutpqSqoIMnG6mmrarLpWrKwmGiYy9o5oWHiEJKQAyvQAgowAwgASQRJhQiLiIdEmcnEyZnKaBXLachq62bIm2riVuiZFrKZy4xq1IE4NuABm+ESCYOj4olC4Jy5P2HdQpBBiYASiAG68AGtvi9zpdrrd7o96s9oa97gg7v9MKgIqIgv0QoNUVFENoNDIdJZdKYZCsEHiTLh5gZjLErDYjiCLlcbm8oc48C83qQbuheOhcNwiCizvyALbs07M8FskFc+GI3jI1HojgDfhDSKjRAaIxGDZGbR6o3yUzmLIqRBGBLxKoyNTmXVqcaabSM2GglkQh7Sm6emX3D5fH7-IGSly+73+v2Rt4Iv5KlHDVXBHga7Ha8n4wklElk8xrDZ6fS0ixWGoOY4e2OQyPR7089B8gVCkXi8N4Gs+sExnve+NIpNiFPq8LDHEIXVxBJGGTE6r5uSsDYTGTWZ1ltfujkd2Ww7mfUTfRVhuX7yHyqADxMqjgYtNjrWgaJqIzLmQaORzz+zgoOsmLGoOgyOUrAaOY8ipKk5jbqcl67oGvL8oKwqCKK6ASmeHJ7thCoJsqyZ3mqmLpuOmalO+CwZPajppNoZLfrgujpNsxR7Ac9iVqIvAQHAEgvKOmojM+iAALTzDoehfsSWzmMY4HmGSolvrgH6aFMeLmMUr5GrBLhNGAgkZiJCByZSmSsEaajGPMizLJa5LaJMJgQeudJbpWTJ9m8RlkSZxiqSBaxlrS5qGmSGhGra1QOk6LqRXpnbeResK+U+UiIJUgUVMUliha+AEqY6MWOkYzozAlnnVslDxYQ0PkkY+wkZZOSzZcFeVmgVDmmMuxU0XFFVulVO5dvWaXNWM9EOTIepUqubmbhWdSjTV9b1g1D5CROn6KA5Bb6nIC2ZO5y1Vjul4TROr5Ab+s6LMkdEMZZhJbDs7GLIlCG1eeUBXZmagOrgd3yMkCTgdNORaesTlvWx4wcZxQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAYgJIAyAKgKIBKA2gAwC6ioADgPaz4ALvl4A7LiAAeiAIwBWAGy4FAdgCcKgMwKFmtWu06ANCACeidXNwAmawoAs1markAOGfoC+nkygw4CYjJaAE0ABUoAOQBxNk4kED4BYTEJaQQAWnk1XDk5NR0FV017VhVXVk0TcwQ5ctwVezV7ByLXFVY1OW9fNCw8QhJSAGV6AEFGAGEACTiJJKERcQT0rPlcSr1NRut3Is0qs0QDBs0K1jLFfMV7HpA-ftwAM3wiQTB0fFEoUggxMFwsEEqHegL6ARebw+XygcwSCxSy1A6XkSlUGkMegMhWqFnsKgadkcZQOXQMdweENe70+3zB-jwlOwMN+-wIogAbrwANYApnPanQun8pkwhBfLmYEFLOJwnj8RapFaIdoyGyuNTOHZFTWuXG1BRWFSNVSudwySrdHz3cF4SE0mH0x6i76kD7oXjoXDcIggp6egC2TqpUNpUGDjNtYolvCliNlHHmCsRaUQOmsGxkMncFQ1mmz+rkWYaResKlsCmyuwptoFocd9o+dYdrr+ogBMd5EebQvDja9-ejnNj0rECfi8uSS1TCFc9jV9ns+ca+jJ7n1rgUOQuGnLcha+TUrhrDJ7YbPZ5Z7s93t9gn96CD-MHdP7l++4uHcZlHDliWT07Kgg6a4EuMgtCoW5Loahw1O49i4Eeui2Kw9iuNYXQKCezpRsKuE-G2HbDl2Ir4RGQ6SqOojjkmU5KsiiB2BsrhyJo1ioWSrDtC0+rWHUNgaJ0FydPoZy3NapEMo6Lo-NeXo+n6gbdjJ5EfjG35jr+ibwgB9FSIgjiaIhThqKw1glFsi76vIarCTuzgVPOJTeNaoi8BAcASEytGKki+mZOxBJ5AUOjFKU5SVPqGTmYhq6mTI7FmglKjYQEgxgD5KZAfxbhIforH5OZMgbqwVjyBhMgdIuzQKNYqV2oKYaZYBDG1EWuDoeh2ZsZq+T2PqBxKCopbsauGpaPV77ht5Ol0X56SHh1uxOMUFV9fqjgIXxCUtLoZT2EWk0vtNtYyc1enpA4BKdStPXZP1RwGltpZaOxJSseJvSnsd3aEed82yGUGYqNmc7yHIqG6Hqj1uEoEMJR4ujgYuVpfY8P39v9M4KBcNj4u0JRlvBCj6uWBJoVD3EHQeR2NQ2jVTVjQEOK4ePlFojjlOBJOPZu5OboYBjxehtP1q+DN-bNvkzhaCXKEDrDZOWTgPXBGqnLodT5m4IOfTap5nVLWWtdoapaMUmgXEWxP6rouR2XxTQkp0k0qYbk7S0BpQ5ObBxW9m3O8ZUoGrjozgWli4neEAA */
   id: "search",
   initial: "idle",
   context: {
@@ -47,7 +52,7 @@ export default setup({
     idle: {
       on: {
         FILTER: {
-          //   guards: ["hasFilters", "hasSearchString"],
+          guard: "hasSearchString",
           actions: assign({
             selectedFilters: ({ event }) => {
               return event.filters;
@@ -56,7 +61,6 @@ export default setup({
           target: "filtering",
         },
         TYPING: {
-          //   guards: ["hasFilters", "hasSearchString"],
           actions: assign({
             currentQ: ({ event }) => {
               return event.q;
@@ -64,7 +68,7 @@ export default setup({
           }),
         },
         SEARCH: {
-          guards: ["hasSearchString"],
+          guard: "hasSearchString",
           actions: assign(() => ({
             selectedFilters: [],
           })),
@@ -92,10 +96,13 @@ export default setup({
                   actions: assign({
                     searchData: ({ event }) => event.output,
                   }),
-                  target: "#search.idle",
+                  target: "done",
                 },
                 onError: {},
               },
+            },
+            done: {
+              type: "final",
             },
           },
         },
@@ -105,21 +112,29 @@ export default setup({
             filtering: {
               invoke: {
                 src: "getFacets",
-                input: ({ context }) => ({
-                  q: context.currentQ,
-                  filters: context.selectedFilters,
-                }),
+                input: ({ context }) => {
+                  return {
+                    q: context.currentQ,
+                    filters: context.selectedFilters,
+                  };
+                },
                 onDone: {
                   actions: assign({
                     facetData: ({ event }) => event.output,
                   }),
-                  target: "#search.idle",
+                  target: "done",
                 },
                 onError: {},
               },
             },
+            done: {
+              type: "final",
+            },
           },
         },
+      },
+      onDone: {
+        target: "#search.idle",
       },
     },
     searching: {
@@ -144,14 +159,6 @@ export default setup({
           },
         },
       },
-    },
-  },
-  guards: {
-    hasFilters: ({ context }) => {
-      return context.filters.length > 0;
-    },
-    hasSearchString: ({ context }) => {
-      return !context.q;
     },
   },
 });

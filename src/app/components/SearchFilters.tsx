@@ -40,12 +40,10 @@ const FormSchema = z.object({
 });
 
 export default function SearchFilters() {
-  const currentFilters = useSelector(
+  const machineContext = useSelector(
     searchMachineActor,
-    (snapshot) => snapshot.context.selectedFilters
+    (snapshot) => snapshot.context
   );
-
-  //   console.log(xstateContext, "SearchField component");
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -55,13 +53,15 @@ export default function SearchFilters() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    // console.log(data.items);
     searchMachineActor.send({ type: "FILTER", filters: data.items });
   }
 
   return (
     <Form {...form}>
-      <pre>{JSON.stringify(currentFilters, null, 2)}</pre>
+      <div className="min-h-700 mb-10">
+        <pre>{JSON.stringify(machineContext, null, 2)}</pre>
+      </div>
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
