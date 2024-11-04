@@ -44,73 +44,50 @@ export default function SearchFilters() {
     searchMachineActor,
     (snapshot) => snapshot.context
   );
+  const selectedFilters = useSelector(
+    searchMachineActor,
+    (snapshot) => snapshot.context.selectedFilters
+  );
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      items: [],
-    },
-  });
+  console.log({ selectedFilters });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     searchMachineActor.send({ type: "FILTER", filters: data.items });
   }
+  //     searchMachineActor.send({ type: "FILTER", filters: data.items });
 
   return (
-    <Form {...form}>
+    <>
       <div className="min-h-700 mb-10">
         <pre>{JSON.stringify(machineContext, null, 2)}</pre>
       </div>
-
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="items"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Filtre</FormLabel>
-                <FormDescription>Filtrer søgeresultatet.</FormDescription>
-              </div>
-              {items.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="items"
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className="flex flex-row items-start space-x-3 space-y-0"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
-                                    )
-                                  );
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="text-sm font-normal">
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    );
-                  }}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+      <div>
+        {items.map((item) => (
+          <div key={item.id}>
+            <div>
+              <label
+                htmlFor={item.id}
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {item.label}
+              </label>
+            </div>
+            <Checkbox
+              id={item.id}
+              name="items"
+              value={item.id}
+              checked={selectedFilters.includes(item.id)}
+              onClick={() => {
+                console.log("clicked", item.id);
+                searchMachineActor.send({
+                  type: "TOGGLE_FILTER",
+                  filter: item.id,
+                });
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
