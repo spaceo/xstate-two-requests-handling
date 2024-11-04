@@ -1,13 +1,12 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import machine from "../../machines/search.machine.actor";
+import searchMachine from "@/machines/search.machine";
 import { useSelector } from "@xstate/react";
 
 export default function SearchField() {
-  const currentQ = useSelector(
-    machine,
-    (snapshot) => snapshot.context.currentQ
-  );
+  const currentQ = useSelector(searchMachine, (snapshot) => {
+    return snapshot.context.currentQ;
+  });
 
   return (
     <div className="m-20 clear-both">
@@ -15,10 +14,12 @@ export default function SearchField() {
         type="text"
         placeholder="Search"
         onChange={({ target: { value } }) =>
-          machine.send({ type: "TYPING", q: value })
+          searchMachine.send({ type: "TYPING", q: value })
         }
       />
-      <button onClick={() => machine.send({ type: "SEARCH" })}>Search</button>
+      <button onClick={() => searchMachine.send({ type: "SEARCH" })}>
+        Search
+      </button>
     </div>
   );
 }

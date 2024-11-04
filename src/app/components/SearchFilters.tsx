@@ -1,21 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import searchMachineActor from "../../machines/search.machine.actor";
+import searchMachine from "@/machines/search.machine";
 import { useSelector } from "@xstate/react";
 
 const items = [
@@ -33,28 +19,15 @@ const items = [
   },
 ] as const;
 
-const FormSchema = z.object({
-  items: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You have to select at least one item.",
-  }),
-});
-
 export default function SearchFilters() {
   const machineContext = useSelector(
-    searchMachineActor,
+    searchMachine,
     (snapshot) => snapshot.context
   );
   const selectedFilters = useSelector(
-    searchMachineActor,
+    searchMachine,
     (snapshot) => snapshot.context.selectedFilters
   );
-
-  console.log({ selectedFilters });
-
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    searchMachineActor.send({ type: "FILTER", filters: data.items });
-  }
-  //     searchMachineActor.send({ type: "FILTER", filters: data.items });
 
   return (
     <>
@@ -78,8 +51,7 @@ export default function SearchFilters() {
               value={item.id}
               checked={selectedFilters.includes(item.id)}
               onClick={() => {
-                console.log("clicked", item.id);
-                searchMachineActor.send({
+                searchMachine.send({
                   type: "TOGGLE_FILTER",
                   filter: item.id,
                 });

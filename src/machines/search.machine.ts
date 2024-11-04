@@ -1,6 +1,6 @@
-import { assign, fromPromise, setup } from "xstate";
+import { assign, createActor, fromPromise, setup } from "xstate";
 
-export default setup({
+const machine = setup({
   types: {
     context: {} as {
       currentQ: string;
@@ -172,3 +172,9 @@ export default setup({
     },
   },
 });
+
+export default createActor(machine, {
+  input: {
+    selectedFilters: ["horse"],
+  },
+}).start();
