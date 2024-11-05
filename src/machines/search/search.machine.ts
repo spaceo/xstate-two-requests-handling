@@ -1,4 +1,4 @@
-import { and, assign, fromPromise, not, setup } from "xstate";
+import { assign, fromPromise, setup } from "xstate";
 
 export default setup({
   types: {
@@ -29,9 +29,7 @@ export default setup({
       },
     }),
     assignQToContext: assign({
-      currentQ: ({ event }) => {
-        return event.q;
-      },
+      currentQ: ({ event }) => event.q,
     }),
     resetFiltersIfNoQ: assign({
       selectedFilters: ({ context }) => {
