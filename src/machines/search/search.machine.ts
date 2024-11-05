@@ -1,4 +1,4 @@
-import { and, assign, createActor, emit, fromPromise, setup } from "xstate";
+import { and, assign, fromPromise, setup } from "xstate";
 
 export default setup({
   types: {
@@ -93,9 +93,9 @@ export default setup({
     },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAKgPIDi1AMgKID6AYgJJ3kMBKA2gAwBdRKAAOAe1j4ALvnEA7ESAAeiAMxqALLgCsagBwBOQ0bU6AjAHZ+5gDQgAnok2GAbLs399ln+deXNS30AX2D7FAwcAmIycgBNAAU2ADlqAWEkEAkpWQUlVQQAWjVXbU0AJktzcvM1cv01fn41eycEHX19XC1yrTVzQwHLHUNQ8LQsPEISUgBlBgBBbgBhAAl0pWyZOUVMgsLzcx1cZrVDNQD6vwaWx0Rz3EsDJv5h1xGdUrGQCMncADN8ERpGB0Ph5FBSBAFGBcLBpKgQXCJlFAcDQeCoBtMltcrtQAUju5-IYnq5XGdzuTXK1EAFLI9yqVyq8NIYRmpvr9UUCQWCIcjInhudhMVCYQR5AA3cQAa1hIoBvIxAsVIsxCHBMswiJ26WxYkk2zye0Q5n4rkMuEMLMG+h0TU05gatIQ-jUuApFPO-FJHVJXJReDRfMxgr+6ohpFB6HE6FwoiIiP+cYAtuGeej+VAM8KgxqteIdXj9UJNka8flEPpXPxPZozJa-PVNK3Xa4Bp7qiZ3pp9OZAjpA0KlVmwyHQaPQ1HofJYYX5bmpyqcxP42uC9Ki7qFKWMoacjsqwhzZ4TgEbbWntVNDpXaT3N4BzWbkdW8O-huBWvl9no+hY3jRNkzTJcv1XZV10gzdtR3eQ93LQ8TQJasOxOCkam8fwjCse9ynKXB9D7ZoKS0e1mg-KJIxzajxTnSUZUXNV81VFioE1Ldiz1IQDSyCsj1Ndpalwa4agMG8bX0V0Li6HRKndIILmGYZKLzIUw1omM4wTJNpBTdB02Y9TWOM9jCy43ceLLHF+OQlRnCeXQtDcS19CacoKldA5LCtfgmRtQ5KnqfQmVCMIQHkcQIDgJQRUQ418XsoonQIioqjE+pGmaLyzG0Pym1bdlmlvTlwsVaYwHiytBMKB4Bn4B0POdJkguk-htEGAwa2qYYdDk1Tf0xKqBJQhBhjrW9jEtTwmXtKS7gQVttA7cp2Qqeo-POSwBvA3NhrsgofK6Sa3EMGbXDm109AIwKztbAYiItHboJMiM2P2xKCiI9wTum-LLoW-wbu7bwXBeEIyqDQbXqiWdKpspDPrNSpzG6B0Rhayk-PbM7ulcVa2SsYxzmesdv0gj7jyOwifPx28bC0OwFoaY4yPajsG2aQZSenCCs2hqBKcE76abcDyHVqJ172GbpiP7fC+qeHmV1-XA4aF0bqkOXBeiMOT-FePt71JXQTFePw-IqVwBuojWkqdVGzFqM6Lp89rNC8pl3H1wZanq4x30hkdqNzIaEYS49JrR53NFdwx3a86pvf80pJfqNxtrCoA */
+  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAKgPIDi1AMgKID6AYgJJ3kMBKA2gAwBdRKAAOAe1j4ALvnEA7ESAAeiAEwBGAGy4AzAHYAHAE5+WtQFYANCACeiACxHcxrQ7NqHx7z4sBfPxsUDBwCYjIAZQZyVg4ubgiBYSQQCSlZBSVVBE0dV35jA2s7RF0LBz0tfQ1DfQt+BsatAKC0LDxCEgoATQAFNgA5aiSlNJk5RRTsgFp6-RcNd3Ni+wRjNT19XQcixsa1FpBg9rCuqIBBbgBhAAkRlLGMydBsh01cDWMLXQ1LG1WtIZdLg1IC6odjqEAGb4IjSMDofDyKDneQQCJtHBIqCkCAKMC4WDSVDwwmYvAwuEI7Go9Hk7H3MSScaZKaIDQc3AOLQFIr-dmfFwWZZ7PYaCHk3CU+GI5G0jEhbDYsmKlXtbG4-EEeQAN3EAGsCZCKbCZTS0Qr1ci1aFjdiEEi9ZgSRMkozUsynll2fxhS58oU6vycg5DC5LEZfv5AkdJdLqXKLfTrcabUrkaQEehxOhcKIiCSoTmALZpqWmhMopOK5Wpu3Ih268TOp5uoSjT0Tb0IQxOXDVWrbfQOX4aArBz4VUxqbZFCWq+Oyqt0mvWxflqlLzXyAmOg1GuMVpfy5NQDcy8+VxtOl0KNvJJnpLtshBj0FciOGKPBiz6fi4EwPGjVoFyPc0VytM910XDUsxzPMC2kIt0FLVMYMTCCsTXI9LyXa9m1veR7w7J9WReRBe3mEclj+EoEAsbQAKqGpwUOeRxAgOAlGNEiWWeFREFmCwLAWGiVkEqpcAsYx9C0YVLHnE5OjAXivRfaZfjDAM+To8xgWqAdWJAk50OXS0sKgVTn3IhAtnmGd+G5WpxNfYwXH4GcdiM2NQM3cDzPTM8eIeTsyIE2zDBE74GPklyxyojzZ28tCwIwgLa0letLJC0j+OyIFgWijRYuDTwEs8ucYxSvy0tPMs8R3KywuyX5nC2IEOVkupI1KrQ3LkirksPGqzLqxcmryxAjBEhynKDOi3jc3RmOcxToVS0bVygnDTIm7sCpBXRHLBFzhSWlaht8s1aq23DcAalScr47tfncKSTFqN4ql-L8f2MDRcC0DRDOjAIgA */
   id: "search",
-  initial: "idle",
+  initial: "filteringAndSearching",
   context: ({ input }) => ({
     currentQ: input.q ?? "",
     searchData: {},
@@ -108,22 +108,22 @@ export default setup({
       on: {
         TOGGLE_FILTER: {
           actions: ["toggleFilterInContext"],
-          target: "filtering",
+          target: "filteringAndSearching",
         },
         SET_FILTERS: {
           actions: ["setFiltersInContext"],
-          target: "filtering",
+          target: "filteringAndSearching",
         },
         TYPING: {
-          actions: ["assignQToContext", "resetFiltersIfNoQ"],
+          actions: ["assignQToContext"],
         },
         SEARCH: {
           actions: ["resetFilters"],
-          target: "searching",
+          target: "filteringAndSearching",
         },
       },
     },
-    filtering: {
+    filteringAndSearching: {
       type: "parallel",
       initial: "search",
       states: {
@@ -175,26 +175,6 @@ export default setup({
       },
       onDone: {
         target: "#search.idle",
-      },
-    },
-    searching: {
-      initial: "searching",
-      states: {
-        searching: {
-          guard: "hasSearchString",
-          invoke: {
-            src: "performSearch",
-            input: ({ context }) => ({
-              q: context.currentQ,
-              filters: context.selectedFilters,
-            }),
-            onDone: {
-              actions: ["setSearchDataInContext"],
-              target: "#search.idle",
-              onError: {},
-            },
-          },
-        },
       },
     },
   },
