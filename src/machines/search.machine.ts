@@ -1,4 +1,24 @@
-import { assign, createActor, fromPromise, setup } from "xstate";
+import { and, assign, createActor, emit, fromPromise, setup } from "xstate";
+import {
+  getInitialUrlParams,
+  updateUrlParamsFilter,
+  updateUrlParamsQ,
+} from "./search.machine.url-params";
+
+export const knownFilters = [
+  {
+    id: "apple",
+    label: "Æble",
+  },
+  {
+    id: "horse",
+    label: "Hest",
+  },
+  {
+    id: "cannibal",
+    label: "Kannibal",
+  },
+] as const;
 
 const machine = setup({
   types: {
@@ -12,6 +32,16 @@ const machine = setup({
       q: string;
       filters: string[];
     },
+  },
+  actions: {
+    updateUrlParamsQ: emit(({ context }) => ({
+      type: "updateUrlParamsQ",
+      q: context.currentQ,
+    })),
+    updateUrlParamsFilter: emit(({ context }) => ({
+      type: "updateUrlParamsFilter",
+      params: context.selectedFilters,
+    })),
   },
   actors: {
     performSearch: fromPromise(
@@ -41,6 +71,11 @@ const machine = setup({
     hasSearchString: ({ context }) => {
       return Boolean(context.currentQ && context.currentQ.length > 0);
     },
+    hasFilters: ({ context }) => {
+      return Boolean(
+        context.selectedFilters && context.selectedFilters.length > 0
+      );
+    },
     filterNotAlreadySelected: ({ context, event }) => {
       return !context.selectedFilters.includes(event.filter);
     },
@@ -59,31 +94,46 @@ const machine = setup({
     idle: {
       on: {
         TOGGLE_FILTER: {
-          guard: "hasSearchString",
-          actions: assign({
-            selectedFilters: ({ event, context }) => {
-              if (context.selectedFilters.includes(event.filter)) {
-                return context.selectedFilters.filter(
-                  (filter) => filter !== event.filter
-                );
-              }
-              return [...context.selectedFilters, event.filter];
-            },
-          }),
+          // guard: "hasSearchString",
+          actions: [
+            assign({
+              selectedFilters: ({ event, context }) => {
+                // Remove filter.
+                if (context.selectedFilters.includes(event.filter)) {
+                  return context.selectedFilters.filter(
+                    (filter) => filter !== event.filter
+                  );
+                }
+                // Add filter.
+                return [...context.selectedFilters, event.filter];
+              },
+            }),
+            { type: "updateUrlParamsFilter" },
+          ],
           target: "filtering",
         },
         TYPING: {
-          actions: assign({
-            currentQ: ({ event }) => {
-              return event.q;
-            },
-          }),
+          actions: [
+            assign({
+              currentQ: ({ event }) => {
+                return event.q;
+              },
+              selectedFilters: ({ context }) => {
+                if (!context.currentQ) {
+                  return [];
+                }
+                return context.selectedFilters;
+              },
+            }),
+          ],
         },
         SEARCH: {
-          guard: "hasSearchString",
-          actions: assign(() => ({
-            selectedFilters: [],
-          })),
+          actions: [
+            assign(() => ({
+              selectedFilters: [],
+            })),
+            { type: "updateUrlParamsQ" },
+          ],
           target: "searching",
         },
       },
@@ -94,6 +144,7 @@ const machine = setup({
       states: {
         search: {
           initial: "searching",
+          guard: "hasSearchString",
           states: {
             searching: {
               invoke: {
@@ -120,6 +171,7 @@ const machine = setup({
         },
         filter: {
           initial: "filtering",
+          guard: and(["hasSearchString", "hasFilters"]),
           states: {
             filtering: {
               invoke: {
@@ -151,6 +203,7 @@ const machine = setup({
     },
     searching: {
       initial: "searching",
+      guard: ["hasSearchString"],
       states: {
         searching: {
           invoke: {
@@ -175,30 +228,17 @@ const machine = setup({
   },
 });
 
-export const knownFilters = [
-  {
-    id: "apple",
-    label: "Æble",
-  },
-  {
-    id: "horse",
-    label: "Hest",
-  },
-  {
-    id: "cannibal",
-    label: "Kannibal",
-  },
-] as const;
-
-const params = new URLSearchParams(document.location.search);
-const filters = params
-  .getAll("filter")
-  .filter((filter) => knownFilters.find((known) => known.id === filter));
-const q = params.get("q") ?? "";
-
-export default createActor(machine, {
+const { q, filters } = getInitialUrlParams(knownFilters);
+const actor = createActor(machine, {
   input: {
     q,
     filters,
   },
-}).start();
+});
+
+actor.on("updateUrlParamsFilter", updateUrlParamsFilter);
+actor.on("updateUrlParamsQ", updateUrlParamsQ);
+
+actor.start();
+
+export default actor;
