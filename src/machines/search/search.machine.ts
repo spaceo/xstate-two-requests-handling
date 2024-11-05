@@ -1,4 +1,4 @@
-import { and, assign, fromPromise, setup } from "xstate";
+import { and, assign, fromPromise, not, setup } from "xstate";
 
 export default setup({
   types: {
@@ -50,9 +50,6 @@ export default setup({
     setSearchDataInContext: assign({
       facetData: ({ event }) => event.data,
     }),
-    setFiltersInContext: assign({
-      selectedFilters: ({ event }) => event.filters,
-    }),
   },
   actors: {
     performSearch: fromPromise(
@@ -79,21 +76,12 @@ export default setup({
     ),
   },
   guards: {
-    hasSearchString: ({ context }) => {
-      console.log(context.currentQ);
+    contextHasSearchString: ({ context }) => {
       return Boolean(context.currentQ && context.currentQ.length > 0);
-    },
-    hasFilters: ({ context }) => {
-      return Boolean(
-        context.selectedFilters && context.selectedFilters.length > 0
-      );
-    },
-    filterNotAlreadySelected: ({ context, event }) => {
-      return !context.selectedFilters.includes(event.filter);
     },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAKgPIDi1AMgKID6AYgJJ3kMBKA2gAwBdRKAAOAe1j4ALvnEA7ESAAeiAEwBGAGy4AzAHYAHAE5+WtQFYANCACeiACxHcxrQ7NqHx7z4sBfPxsUDBwCYjIAZQZyVg4ubgiBYSQQCSlZBSVVBE0dV35jA2s7RF0LBz0tfQ1DfQt+BsatAKC0LDxCEgoATQAFNgA5aiSlNJk5RRTsgFp6-RcNd3Ni+wRjNT19XQcixsa1FpBg9rCuqIBBbgBhAAkRlLGMydBsh01cDWMLXQ1LG1WtIZdLg1IC6odjqEAGb4IjSMDofDyKDneQQCJtHBIqCkCAKMC4WDSVDwwmYvAwuEI7Go9Hk7H3MSScaZKaIDQc3AOLQFIr-dmfFwWZZ7PYaCHk3CU+GI5G0jEhbDYsmKlXtbG4-EEeQAN3EAGsCZCKbCZTS0Qr1ci1aFjdiEEi9ZgSRMkozUsynll2fxhS58oU6vycg5DC5LEZfv5AkdJdLqXKLfTrcabUrkaQEehxOhcKIiCSoTmALZpqWmhMopOK5Wpu3Ih268TOp5uoSjT0Tb0IQxOXDVWrbfQOX4aArBz4VUxqbZFCWq+Oyqt0mvWxflqlLzXyAmOg1GuMVpfy5NQDcy8+VxtOl0KNvJJnpLtshBj0FciOGKPBiz6fi4EwPGjVoFyPc0VytM910XDUsxzPMC2kIt0FLVMYMTCCsTXI9LyXa9m1veR7w7J9WReRBe3mEclj+EoEAsbQAKqGpwUOeRxAgOAlGNEiWWeFREFmCwLAWGiVkEqpcAsYx9C0YVLHnE5OjAXivRfaZfjDAM+To8xgWqAdWJAk50OXS0sKgVTn3IhAtnmGd+G5WpxNfYwXH4GcdiM2NQM3cDzPTM8eIeTsyIE2zDBE74GPklyxyojzZ28tCwIwgLa0letLJC0j+OyIFgWijRYuDTwEs8ucYxSvy0tPMs8R3KywuyX5nC2IEOVkupI1KrQ3LkirksPGqzLqxcmryxAjBEhynKDOi3jc3RmOcxToVS0bVygnDTIm7sCpBXRHLBFzhSWlaht8s1aq23DcAalScr47tfncKSTFqN4ql-L8f2MDRcC0DRDOjAIgA */
+  /** @xstate-layout N4IgpgJg5mDOIC5SzAQwE4GMAWA6AlhADZgDEAKgPIDi1AMgKID6AYgJJ3kMBKA2gAwBdRKAAOAe1j4ALvnEA7ESAAeiAEwAWNbgAc-NQDYA7Gv56ArKYCc5gDQgAnog38DuK2oDM3ozoCM5kYaOgYAvqH2KBg4BMRkVLSMrBxcfH7CSCASUrIKSqoIhua4fmqmOkaeRn4aGkH2Tgjm5m46-lYmalZV5lY64ZFoWHiEJBQAmgAKbABy1AIZYpIycoqZBQC0LTolfp46pr2eBhpWDYhBnrj8fvy1nmXBVgMgUcOxYwDKDACC3ADCAAkFkpsis8ut1EZ+LgNOYdB4DB5zHVfOcEAYKrCkScjJi7p4US83jFRmRvn8gbx0qDlrk1qACl1tEZfJ4-NU7gZ9EZ0Qc-Lh9p4NPsNLcDGodOZiUMYgAzfBEaRgdD4eRQH7yCCfWXYNVQUgQBRgXCwaSoZWm3W4BVKlX6zXa3X6kGZMH0-KIDaGNx3FFGXoGdlGPro25XfiuNTmVyWQzeMIRV7W23K1Xqx066J69VW7N54b6w3GgjyABu4gA1iaSXhU-aM1qs4Xc7WCzh9Qg1RXMBbVgtXUscqtPQhbi13FZud0A+jNDtkb5StKk236+mNU3na3rbWiyr0OJ0LhREQLXKjwBbdt1xVph1b7P6m83zvd8S9+kDoS04cQxmIDodS4NUFTCkEpS3GcjiIH4VgaO4+jCj0Mr5uuD5Ok+ubrjad4NgaRryCa77Vi+6GNphLZQLhdrHuRUBduWH59go36LFkdIjpCY76G4WiBP40booEMIIlGK6DGheEbpm27UTh9GkAeR4nme0gXug15rtJGHNh22HSTR97qoxPYsfIbG-uCDIqIBwFii4Ep2DBTR+K0xh+BUK5JvI4gQHASi1lZHrcRsBhubs+yHN0JzQY0YVGLgvSsscgaVA5qHvGSwVcQBCAbDUVggSELhwvCBjmKUGjouFxQmE8lRqEEVh+H4mXyjpFF6TmUA5f+tkIJUiVeFyXlhkVVhIV4BjGC1hgaO1t60bpck3n1NkFL4xTmISAROWG-CJS4Xg6J43TRr0WiLUZ+GyVh1Ftnu6rraOp1XDtlUtEJLmaEdSEigG130XdVEvoRYAvdxpS+CBQqtXiAZLnOSK4BVXgAxJyZSctXWreukN5VtuAjRomKzi5WhFccnR4gczQ2EDnWbpR+nyYZ9EEwNb3E54o3k40LRUx5XmMzjzPdc+OHg5zBRVTC8J9EEhiI-4wktajHKeYD4ShEAA */
   id: "search",
   initial: "filteringAndSearching",
   context: ({ input }) => ({
@@ -106,21 +94,30 @@ export default setup({
   states: {
     idle: {
       on: {
-        TOGGLE_FILTER: {
-          actions: ["toggleFilterInContext"],
-          target: "filteringAndSearching",
-        },
-        SET_FILTERS: {
-          actions: ["setFiltersInContext"],
-          target: "filteringAndSearching",
-        },
+        TOGGLE_FILTER: [
+          {
+            guard: "contextHasSearchString",
+            actions: ["toggleFilterInContext"],
+            target: "filteringAndSearching",
+          },
+          {
+            target: "idle",
+          },
+        ],
         TYPING: {
           actions: ["assignQToContext"],
         },
-        SEARCH: {
-          actions: ["resetFilters"],
-          target: "filteringAndSearching",
-        },
+        SEARCH: [
+          {
+            guard: "contextHasSearchString",
+            actions: ["resetFilters"],
+            target: "filteringAndSearching",
+          },
+          {
+            actions: ["resetFilters"],
+            target: "idle",
+          },
+        ],
       },
     },
     filteringAndSearching: {
@@ -154,7 +151,6 @@ export default setup({
           states: {
             filtering: {
               invoke: {
-                guard: and(["hasSearchString", "hasFilters"]),
                 src: "getFacets",
                 input: ({ context }) => ({
                   q: context.currentQ,
