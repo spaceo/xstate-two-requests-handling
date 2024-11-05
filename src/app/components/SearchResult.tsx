@@ -1,13 +1,10 @@
 "use client";
 
-import searchMachine from "@/machines/search.machine";
+import actor from "@/machines/search/search.actor";
 import { useSelector } from "@xstate/react";
 
 export default function SearchResult() {
-  const machineContext = useSelector(
-    searchMachine,
-    (snapshot) => snapshot.context
-  );
+  const machineContext = useSelector(actor, (snapshot) => snapshot.context);
 
   return (
     <div className="m-20 clear-both">

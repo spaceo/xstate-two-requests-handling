@@ -1,36 +1,18 @@
 import { and, assign, createActor, emit, fromPromise, setup } from "xstate";
-import {
-  getInitialUrlParams,
-  updateUrlParamsFilter,
-  updateUrlParamsQ,
-} from "./search.machine.url-params";
 
-export const knownFilters = [
-  {
-    id: "apple",
-    label: "Æble",
-  },
-  {
-    id: "horse",
-    label: "Hest",
-  },
-  {
-    id: "cannibal",
-    label: "Kannibal",
-  },
-] as const;
-
-const machine = setup({
+export default setup({
   types: {
     context: {} as {
       currentQ: string;
       searchData: Record<string, unknown>;
       facetData: Record<string, unknown>;
       selectedFilters: string[];
+      knownFilters: readonly { readonly id: string; readonly label: string }[];
     },
     input: {} as {
       q: string;
       filters: string[];
+      knownFilters: readonly { readonly id: string; readonly label: string }[];
     },
   },
   actions: {
@@ -89,6 +71,7 @@ const machine = setup({
     searchData: {},
     facetData: {},
     selectedFilters: input.filters ?? [],
+    knownFilters: input.knownFilters,
   }),
   states: {
     idle: {
@@ -227,18 +210,3 @@ const machine = setup({
     },
   },
 });
-
-const { q, filters } = getInitialUrlParams(knownFilters);
-const actor = createActor(machine, {
-  input: {
-    q,
-    filters,
-  },
-});
-
-actor.on("updateUrlParamsFilter", updateUrlParamsFilter);
-actor.on("updateUrlParamsQ", updateUrlParamsQ);
-
-actor.start();
-
-export default actor;

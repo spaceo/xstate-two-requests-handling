@@ -1,13 +1,17 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import searchMachine, { knownFilters } from "@/machines/search.machine";
+import actor from "@/machines/search/search.actor";
 import { useSelector } from "@xstate/react";
 
 export default function SearchFilters() {
   const selectedFilters = useSelector(
-    searchMachine,
+    actor,
     (snapshot) => snapshot.context.selectedFilters
+  );
+  const knownFilters = useSelector(
+    actor,
+    (snapshot) => snapshot.context.knownFilters
   );
 
   return (
@@ -28,7 +32,7 @@ export default function SearchFilters() {
             value={item.id}
             checked={selectedFilters.includes(item.id)}
             onClick={() => {
-              searchMachine.send({
+              actor.send({
                 type: "TOGGLE_FILTER",
                 filter: item.id,
               });
