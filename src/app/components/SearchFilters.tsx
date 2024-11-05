@@ -1,10 +1,12 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import actor from "@/machines/search/search.actor";
+import useSearchMachineActor from "@/machines/search/useSearchMachineActor";
 import { useSelector } from "@xstate/react";
+import { Snapshot } from "xstate";
 
 export default function SearchFilters() {
+  const actor = useSearchMachineActor();
   const selectedFilters = useSelector(
     actor,
     (snapshot) => snapshot.context.selectedFilters

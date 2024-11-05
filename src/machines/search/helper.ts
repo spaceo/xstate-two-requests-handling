@@ -1,7 +1,7 @@
 export const getInitialUrlParams = (
   knownFilters: readonly { readonly id: string; readonly label: string }[]
 ) => {
-  const filter = new URLSearchParams(document.location.search);
+  const filter = new URLSearchParams(window.location.search);
   const filters = filter
     .getAll("filter")
     .filter((filter) => knownFilters.find((known) => known.id === filter));

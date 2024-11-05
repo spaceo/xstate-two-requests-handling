@@ -16,7 +16,7 @@ export default setup({
     },
   },
   actions: {
-    assignSelectedFiltersToContext: assign({
+    toggleFilterInContext: assign({
       selectedFilters: ({ event, context }) => {
         // Remove filter.
         if (context.selectedFilters.includes(event.filter)) {
@@ -44,6 +44,15 @@ export default setup({
     resetFilters: assign(() => ({
       selectedFilters: [],
     })),
+    setFacetDataInContext: assign({
+      facetData: ({ event }) => event.data,
+    }),
+    setSearchDataInContext: assign({
+      facetData: ({ event }) => event.data,
+    }),
+    setFiltersInContext: assign({
+      selectedFilters: ({ event }) => event.filters,
+    }),
   },
   actors: {
     performSearch: fromPromise(
@@ -71,6 +80,7 @@ export default setup({
   },
   guards: {
     hasSearchString: ({ context }) => {
+      console.log(context.currentQ);
       return Boolean(context.currentQ && context.currentQ.length > 0);
     },
     hasFilters: ({ context }) => {
@@ -97,7 +107,11 @@ export default setup({
     idle: {
       on: {
         TOGGLE_FILTER: {
-          actions: ["assignSelectedFiltersToContext"],
+          actions: ["toggleFilterInContext"],
+          target: "filtering",
+        },
+        SET_FILTERS: {
+          actions: ["setFiltersInContext"],
           target: "filtering",
         },
         TYPING: {
@@ -115,21 +129,16 @@ export default setup({
       states: {
         search: {
           initial: "searching",
-          guard: "hasSearchString",
           states: {
             searching: {
               invoke: {
                 src: "performSearch",
-                input: ({ context }) => {
-                  return {
-                    q: context.currentQ,
-                    filters: context.selectedFilters,
-                  };
-                },
+                input: ({ context }) => ({
+                  q: context.currentQ,
+                  filters: context.selectedFilters,
+                }),
                 onDone: {
-                  actions: assign({
-                    searchData: ({ event }) => event.output,
-                  }),
+                  actions: ["setSearchDataInContext"],
                   target: "done",
                 },
                 onError: {},
@@ -142,21 +151,17 @@ export default setup({
         },
         filter: {
           initial: "filtering",
-          guard: and(["hasSearchString", "hasFilters"]),
           states: {
             filtering: {
               invoke: {
+                guard: and(["hasSearchString", "hasFilters"]),
                 src: "getFacets",
-                input: ({ context }) => {
-                  return {
-                    q: context.currentQ,
-                    filters: context.selectedFilters,
-                  };
-                },
+                input: ({ context }) => ({
+                  q: context.currentQ,
+                  filters: context.selectedFilters,
+                }),
                 onDone: {
-                  actions: assign({
-                    facetData: ({ event }) => event.output,
-                  }),
+                  actions: ["setFacetDataInContext"],
                   target: "done",
                 },
                 onError: {},
@@ -174,24 +179,20 @@ export default setup({
     },
     searching: {
       initial: "searching",
-      guard: ["hasSearchString"],
       states: {
         searching: {
+          guard: "hasSearchString",
           invoke: {
             src: "performSearch",
-            input: ({ context }) => {
-              return {
-                q: context.currentQ,
-                filters: context.selectedFilters,
-              };
-            },
+            input: ({ context }) => ({
+              q: context.currentQ,
+              filters: context.selectedFilters,
+            }),
             onDone: {
-              actions: assign({
-                searchData: ({ event }) => event.output,
-              }),
+              actions: ["setSearchDataInContext"],
               target: "#search.idle",
+              onError: {},
             },
-            onError: {},
           },
         },
       },

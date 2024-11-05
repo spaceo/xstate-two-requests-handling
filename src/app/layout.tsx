@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { createActorContext } from "@xstate/react";
+import searchActor from "@/machines/search/search.actor";
+import searchMachine from "@/machines/search/search.machine";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
