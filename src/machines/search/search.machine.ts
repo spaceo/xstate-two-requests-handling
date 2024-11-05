@@ -16,13 +16,33 @@ export default setup({
     },
   },
   actions: {
-    updateUrlParamsQ: emit(({ context }) => ({
-      type: "updateUrlParamsQ",
-      q: context.currentQ,
-    })),
-    updateUrlParamsFilter: emit(({ context }) => ({
-      type: "updateUrlParamsFilter",
-      params: context.selectedFilters,
+    assignSelectedFiltersToContext: assign({
+      selectedFilters: ({ event, context }) => {
+        // Remove filter.
+        if (context.selectedFilters.includes(event.filter)) {
+          return context.selectedFilters.filter(
+            (filter) => filter !== event.filter
+          );
+        }
+        // Add filter.
+        return [...context.selectedFilters, event.filter];
+      },
+    }),
+    assignQToContext: assign({
+      currentQ: ({ event }) => {
+        return event.q;
+      },
+    }),
+    resetFiltersIfNoQ: assign({
+      selectedFilters: ({ context }) => {
+        if (!context.currentQ) {
+          return [];
+        }
+        return context.selectedFilters;
+      },
+    }),
+    resetFilters: assign(() => ({
+      selectedFilters: [],
     })),
   },
   actors: {
@@ -77,46 +97,14 @@ export default setup({
     idle: {
       on: {
         TOGGLE_FILTER: {
-          // guard: "hasSearchString",
-          actions: [
-            assign({
-              selectedFilters: ({ event, context }) => {
-                // Remove filter.
-                if (context.selectedFilters.includes(event.filter)) {
-                  return context.selectedFilters.filter(
-                    (filter) => filter !== event.filter
-                  );
-                }
-                // Add filter.
-                return [...context.selectedFilters, event.filter];
-              },
-            }),
-            { type: "updateUrlParamsFilter" },
-          ],
+          actions: ["assignSelectedFiltersToContext"],
           target: "filtering",
         },
         TYPING: {
-          actions: [
-            assign({
-              currentQ: ({ event }) => {
-                return event.q;
-              },
-              selectedFilters: ({ context }) => {
-                if (!context.currentQ) {
-                  return [];
-                }
-                return context.selectedFilters;
-              },
-            }),
-          ],
+          actions: ["assignQToContext", "resetFiltersIfNoQ"],
         },
         SEARCH: {
-          actions: [
-            assign(() => ({
-              selectedFilters: [],
-            })),
-            { type: "updateUrlParamsQ" },
-          ],
+          actions: ["resetFilters"],
           target: "searching",
         },
       },
